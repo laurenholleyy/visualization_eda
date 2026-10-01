@@ -4,7 +4,114 @@ author: "Lauren Holley"
 date: 2026-09-17
 output: github_document
 ---
-```{r}
+```{r message=FALSE}
 library(tidyverse)
+library(ggridges)
+
+library(p8105.datasets)
+data("weather_df")
+```
+
+Now we have everything we need to start!
+
+```{r}
+weather_df
+```
+
+Let's make a scatterplot!
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax))
+```
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) + 
+  geom_point()
+```
+
+Dataframe first typically...
+
+```{r}
+ggp_temp_scatterplot = 
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point()
+
+ggp_temp_scatterplot
+```
+
+Let's make fancy woohoo
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.25) +
+  geom_smooth(se = FALSE)
+```
+
+`alpha` adds some transparency into the points
+`color` colors by name of area
+`geom_smooth` adds smooth line through each set of interest
+`se + FALSE` removes error bars
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = 0.25) +
+  geom_smooth(se = FALSE)
+```
+
+Defining the aesthetic in a specific area so you can layer on the aesthetics.
+
+The aesthetics are up to you!!!
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_smooth(se = FALSE)
+```
+
+Show faceting
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  facet_grid(. ~ name)
+```
+
+Second value (in this case name) will define columns in dataset with `facet_grid`.
+The first value will separate the rows for the graph. If we don't want anything in there use `.` 
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = 0.5) +
+  facet_grid(cols = vars(name))
+```
+
+Diff notation of the same thing tbh.
+
+Let's look at something else neow
+
+```{r}
+weather_df |>
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point(aes(size = prcp), alpha = 0.5) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+```
+
+Make a plot of central park tmax v tmin only, and convert temperatures to farenheit.
+
+```{r}
+weather_df |>
+  filter(name == "CentralPark_NY") |>
+  mutate(
+    tmax = tmax * (9 / 5) + 32,
+    tmin = tmin * (9 / 5) + 32
+  ) |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point()
 ```
 
