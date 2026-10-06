@@ -219,3 +219,64 @@ ggp_seasonal =
 
 `+` next to each other `/` stacked on top of each other ^ these
 functions are with the `library(patchwork)` package
+
+## Data Manipulation
+
+Start with factors.
+
+boxplots
+
+``` r
+weather_df |>
+  mutate(name = fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))) |>
+  ggplot(aes(x = name, y = tmax)) +
+  geom_boxplot()
+```
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](02_visualization_pt2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+weather_df |>
+  mutate(name = fct_reorder(name, tmax)) |>
+  ggplot(aes(x = name, y = tmax)) +
+  geom_boxplot()
+```
+
+    ## Warning: There was 1 warning in `mutate()`.
+    ## ℹ In argument: `name = fct_reorder(name, tmax)`.
+    ## Caused by warning:
+    ## ! `fct_reorder()` removing 17 missing values.
+    ## ℹ Use `.na_rm = TRUE` to silence this message.
+    ## ℹ Use `.na_rm = FALSE` to preserve NAs.
+
+    ## Warning: Removed 17 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
+
+![](02_visualization_pt2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+Putting things in the right order is a factor problem not a `ggplot`
+problem. This is things like which location we want to show first on the
+graph.
+
+Make that distribution plot:
+
+``` r
+weather_df |>
+  select(name, tmax, tmin) |>
+  pivot_longer(
+    tmax:tmin,
+    names_to = "observation",
+    values_to = "temp"
+  ) |>
+  ggplot(aes(x = temp, fill = observation)) +
+  geom_density(alpha = 0.5) +
+  facet_grid(. ~ name)
+```
+
+    ## Warning: Removed 34 rows containing non-finite outside the scale range
+    ## (`stat_density()`).
+
+![](02_visualization_pt2_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
