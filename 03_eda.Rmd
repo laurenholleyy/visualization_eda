@@ -1,0 +1,120 @@
+---
+title: "Numerical Exploratory Data Analysis"
+author: "Lauren Holley"
+date: 2026-10-08
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(p8105.datasets)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+Load the weather data as well.
+
+```{r}
+data("weather_df")
+
+weather_df =
+  weather_df |>
+  mutate(
+    month = lubridate::floor_date(date, unit = "month")
+  )
+```
+
+using these functions to standardize across month categorizations
+
+Now we have everything we need!
+
+```{r}
+weather_df |>
+  filter(tmax >= 20, tmax <= 30) |>
+  ggplot(aes(x = tmax, y= tmin, color = name, shape = name)) +
+  geom_point()
+```
+
+## `group_by()`
+
+add some groups! 
+
+```{r}
+weather_df |>
+  group_by(name, month)
+```
+
+## `summarize()`
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(count = n())
+```
+
+
+```{r}
+weather_df |>
+  count(name, month)
+```
+
+```{r}
+weather_df |>
+  group_by(month) |>
+  summarize(
+    count = n(),
+    n_days = n_distinct(date)
+    )
+```
+
+DONT DO THIS
+
+```{r, eval = FALSE}
+weather_df |>
+  pull(tmax) |>
+  summary()
+```
+
+this instead:
+
+```{r}
+weather_df |>
+  group_by(name) |>
+  summarize(
+    n = n(),
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    median_tmax = median(tmax, na.rm = TRUE),
+    sd_prcp = sd(prcp, na.rm = TRUE),
+    q95_prcp = quantile(prcp, 0.95, na.rm = TRUE)
+  ) |>
+  knitr::kable(digits = 2)
+```
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+  ) |>
+  pivot_wider(
+    names_from = name,
+    values_from = mean_tmax
+  ) |>
+  knitr::kable(digits = 2)
+```
+
+This `knitr::kable()` makes the table show up in the markddown -- nice for presenting the data or sharing with others.
