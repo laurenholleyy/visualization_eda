@@ -118,3 +118,17 @@ weather_df |>
 ```
 
 This `knitr::kable()` makes the table show up in the markddown -- nice for presenting the data or sharing with others.
+
+What about looking at this
+
+```{r}
+weather_df |>
+  group_by(name, month) |>
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+  ) |>
+  ggplot(aes(x = month, y = mean_tmax, color = name)) +
+  geom_point() +
+  geom_line()
+```
+

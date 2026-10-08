@@ -206,3 +206,25 @@ weather_df |>
 
 This `knitr::kable()` makes the table show up in the markddown – nice
 for presenting the data or sharing with others.
+
+What about looking at this
+
+``` r
+weather_df |>
+  group_by(name, month) |>
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE)
+  ) |>
+  ggplot(aes(x = month, y = mean_tmax, color = name)) +
+  geom_point() +
+  geom_line()
+```
+
+    ## `summarise()` has regrouped the output.
+    ## ℹ Summaries were computed grouped by name and month.
+    ## ℹ Output is grouped by name.
+    ## ℹ Use `summarise(.groups = "drop_last")` to silence this message.
+    ## ℹ Use `summarise(.by = c(name, month))` for per-operation grouping
+    ##   (`?dplyr::dplyr_by`) instead.
+
+<img src="03_eda_files/figure-gfm/unnamed-chunk-10-1.png" alt="" width="90%" />
